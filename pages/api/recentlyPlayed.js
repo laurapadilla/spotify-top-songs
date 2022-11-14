@@ -5,11 +5,14 @@ export default async (_, res) => {
   const response = await getRecentlyPlayed();
   const { items } = await response.json();
 
-  const tracks = items.map((track) => ({
-    artist: track.artists.map((artist) => artist.name).join(", "),
-    songUrl: track.external_urls.spotify,
-    title: track.name,
+  const genres = Array.from(new Set(items.map((item) => item.genres).flat()));
+  const artists = items.map((item) => ({
+    artist: item.name,
+    image: item.images[1].url,
+    url: item.external_urls["spotify"],
   }));
+
+  console.log("these are my artists", artists);
 
   return res.status(200).json({ artists, genres });
 };

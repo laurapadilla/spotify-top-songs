@@ -4,13 +4,12 @@ import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import Button from "../components/Button";
 import useUser from "../hooks/useUser";
-import getNowPlayingItem from "../lib/spotify";
 
 export default function Home(props) {
   const [user, fetchUser] = useState(null);
-  const [loading, setLoading] = useState(true);
   const { data, isLoading } = useUser();
-  const tracks = user ? user.tracks : data?.tracks;
+  const artists = user ? user.artists : data?.artists;
+  const genres = user ? user.genres : data?.genres;
   const arr = Array(20).fill(0);
 
   return (
@@ -24,7 +23,16 @@ export default function Home(props) {
       <main className={styles.main}>
         <h1>Spotify Top Songs</h1>
         <Button fetchUser={fetchUser} />
-        <section>here is your music</section>
+        <section>
+          {isLoading
+            ? arr.map((_, index) => {
+                return <div key={index}>nothing to see here</div>;
+              })
+            : artists.map((artist, index) => {
+                console.log("hey it's", artist.artist);
+                return <div key={index}>{artist.artist}</div>;
+              })}
+        </section>
       </main>
     </div>
   );

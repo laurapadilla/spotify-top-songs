@@ -16,7 +16,7 @@ export default function Button({ fetchUser }) {
       popup.close();
 
       fetch(
-        `https://api.spotify.com/v1/me/top/tracks?time_range=medium_term&limit=50`,
+        `https://api.spotify.com/v1/me/top/artists?time_range=medium_term&limit=50`,
         {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -30,16 +30,17 @@ export default function Button({ fetchUser }) {
         .then((data) => {
           const { items } = data;
           showButton(false);
-          const tracks = items.slice(0, 20).map((track) => ({
-            album: track.album.name,
-            albumImg: track.album.images[0],
-            artist: track.artists.map((_artist) => _artist.name).join(", "),
-            songUrl: track.external_urls.spotify,
-            title: track.name,
+          const genres = Array.from(
+            new Set(items.map((item) => item.genres).flat())
+          );
+          const artists = items.map((item) => ({
+            artist: item.name,
+            image: item.images[1].url,
+            url: item.external_urls["spotify"],
           }));
 
-          fetchUser({ tracks });
-          console.log(tracks, "heyyy");
+          fetchUser({ artists, genres });
+          console.log(artists, "heyyy");
         });
     };
   };
@@ -48,9 +49,11 @@ export default function Button({ fetchUser }) {
     const token = window.location.hash.substr(1).split("&")[0].split("=")[1];
     if (token) {
       window.opener.spotifyCallback(token);
-      console.log(token);
     }
+    console.log(token, "hello");
   }, []);
 
-  return <button onClick={login}>login with spotify!</button>;
+  return (
+    <>{button ? <button onClick={login}>login with spotify!</button> : ""}</>
+  );
 }
